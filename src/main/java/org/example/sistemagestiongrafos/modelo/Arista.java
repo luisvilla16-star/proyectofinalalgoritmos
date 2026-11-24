@@ -1,6 +1,7 @@
+
 package org.example.sistemagestiongrafos.modelo;
 
-public class Arista {
+public class Arista implements Comparable<Arista> {
 
     private int origen;
     private int destino;
@@ -26,5 +27,10 @@ public class Arista {
 
     public void setPeso(double peso) {
         this.peso = peso;
+    }
+
+    @Override
+    public int compareTo(Arista otra) {
+        return Double.compare(this.peso, otra.peso);
     }
 }

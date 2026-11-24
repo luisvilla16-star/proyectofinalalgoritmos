@@ -1,6 +1,6 @@
 package org.example.sistemagestiongrafos.modelo;
 
-public class Vertice {
+public class Vertice implements Comparable<Vertice> {
 
     private int id;
     private String nombre;
@@ -25,5 +25,10 @@ public class Vertice {
     @Override
     public String toString() {
         return id + " - " + nombre;
+    }
+
+    @Override
+    public int compareTo(Vertice otro) {
+        return this.nombre.compareTo(otro.nombre);
     }
 }

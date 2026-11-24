@@ -2,7 +2,6 @@
 package org.example.sistemagestiongrafos.prueba;
 
 import org.example.sistemagestiongrafos.modelo.Grafo;
-import org.example.sistemagestiongrafos.modelo.Vertice;
 import org.example.sistemagestiongrafos.modelo.Arista;
 import java.util.ArrayList;
 
@@ -19,7 +18,6 @@ public class PruebaGrafo {
         grafo.agregarVertice("Laboratorio");
         grafo.agregarVertice("Cafeteria");
 
-        // MOSTRAR VERTICES
         for (int i = 0; i < grafo.getVertices().size(); i++) {
 
             if (grafo.getVertices().get(i) != null) {
@@ -58,6 +56,7 @@ public class PruebaGrafo {
             System.out.print("Vertice " + i + ": ");
 
             for (int j = 0; j < lista[i].size(); j++) {
+
                 System.out.print(lista[i].get(j).getDestino() +
                         " Peso: " + lista[i].get(j).getPeso() + " ");
             }
@@ -110,5 +109,44 @@ public class PruebaGrafo {
 
             System.out.println();
         }
+
+        // PROBAR GRAFO DIRIGIDO
+        System.out.println("\nGRAFO DIRIGIDO:");
+
+        Grafo dirigido = new Grafo(3, true);
+
+        dirigido.agregarVertice("Biblioteca");
+        dirigido.agregarVertice("Laboratorio");
+        dirigido.agregarVertice("Cafeteria");
+
+        System.out.println("Agregar conexion:");
+        System.out.println(dirigido.agregarArista(0, 1, 100));
+
+        System.out.println("Buscar conexion 0 a 1:");
+        System.out.println(dirigido.buscarArista(0, 1));
+
+        System.out.println("Buscar conexion 1 a 0:");
+        System.out.println(dirigido.buscarArista(1, 0));
+
+        // PROBAR CONEXIONES INCORRECTAS
+        System.out.println("\nCONEXIONES INCORRECTAS:");
+
+        System.out.println("Vertice inexistente:");
+        System.out.println(dirigido.agregarArista(0, 5, 100));
+
+        System.out.println("Peso negativo:");
+        System.out.println(dirigido.agregarArista(0, 2, -50));
+
+        System.out.println("Conexion repetida:");
+        System.out.println(dirigido.agregarArista(0, 1, 100));
+
+        System.out.println("Conexion consigo mismo:");
+        System.out.println(dirigido.agregarArista(0, 0, 100));
+
+        // PROBAR EXISTENCIA DE VERTICES
+        System.out.println("\nEXISTENCIA DE VERTICES:");
+
+        System.out.println(dirigido.existeVertice(0));
+        System.out.println(dirigido.existeVertice(5));
     }
 }
