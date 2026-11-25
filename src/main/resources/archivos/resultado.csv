@@ -1,0 +1,5 @@
+origen,destino,peso
+Biblioteca,Laboratorio,100.0
+Biblioteca,Cafeteria,150.0
+Laboratorio,Auditorio,200.0
+Cafeteria,Auditorio,50.0
