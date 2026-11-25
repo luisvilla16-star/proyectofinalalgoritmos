@@ -3,6 +3,8 @@ package org.example.sistemagestiongrafos.algoritmos;
 
 import org.example.sistemagestiongrafos.modelo.Grafo;
 import org.example.sistemagestiongrafos.modelo.Arista;
+import org.example.sistemagestiongrafos.modelo.Vertice;
+
 import java.util.ArrayList;
 
 public class DFS {
@@ -16,23 +18,32 @@ public class DFS {
 
         boolean[] visitado = new boolean[grafo.getVertices().size()];
 
-        visitar(grafo, inicio, visitado);
+        ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
+
+        ArrayList<Vertice> vertices = grafo.getVertices();
+
+        visitar(inicio, visitado, lista, vertices);
     }
 
-    public static void visitar(Grafo grafo, int actual, boolean[] visitado) {
+    public static void visitar(int actual,
+                               boolean[] visitado,
+                               ArrayList<Arista>[] lista,
+                               ArrayList<Vertice> vertices) {
 
         visitado[actual] = true;
 
-        System.out.println(grafo.getVertices().get(actual).getNombre());
-
-        ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
+        System.out.println(vertices.get(actual).getNombre());
 
         for (int i = 0; i < lista[actual].size(); i++) {
 
             int destino = lista[actual].get(i).getDestino();
 
-            if (grafo.existeVertice(destino) && !visitado[destino]) {
-                visitar(grafo, destino, visitado);
+            if (destino >= 0 && destino < visitado.length
+                    && !visitado[destino]) {
+
+                if (vertices.get(destino) != null) {
+                    visitar(destino, visitado, lista, vertices);
+                }
             }
         }
     }

@@ -14,22 +14,18 @@ public class GuardarResultados {
             long quickSort) {
 
         try {
-
             BufferedWriter escritor = new BufferedWriter(
                     new FileWriter(archivo, true)
             );
 
-            escritor.write(
-                    cantidad + "," + shellSort + "," + quickSort
-            );
-
+            escritor.write(cantidad + "," + shellSort + "," + quickSort);
             escritor.newLine();
+
             escritor.close();
 
             System.out.println("Resultados guardados correctamente");
 
         } catch (IOException e) {
-
             System.out.println("Error al guardar los resultados");
         }
     }

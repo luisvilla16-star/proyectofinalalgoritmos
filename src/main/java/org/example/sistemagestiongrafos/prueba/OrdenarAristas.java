@@ -3,6 +3,7 @@ package org.example.sistemagestiongrafos.prueba;
 
 import org.example.sistemagestiongrafos.modelo.Grafo;
 import org.example.sistemagestiongrafos.modelo.Arista;
+import org.example.sistemagestiongrafos.modelo.Vertice;
 import org.example.sistemagestiongrafos.algoritmos.Ordenar;
 
 import java.util.ArrayList;
@@ -16,15 +17,12 @@ public class OrdenarAristas {
 
         for (int i = 0; i < lista.length; i++) {
 
-            if (grafo.existeVertice(i)) {
+            for (int j = 0; j < lista[i].size(); j++) {
 
-                for (int j = 0; j < lista[i].size(); j++) {
+                Arista arista = lista[i].get(j);
 
-                    Arista arista = lista[i].get(j);
-
-                    if (arista.getOrigen() == i) {
-                        aristas.add(arista);
-                    }
+                if (arista.getOrigen() < arista.getDestino()) {
+                    aristas.add(arista);
                 }
             }
         }
@@ -38,6 +36,7 @@ public class OrdenarAristas {
         return arreglo;
     }
 
+    // ShellSort por peso
     public static void shellSort(Grafo grafo) {
 
         Arista[] arreglo = obtenerAristas(grafo);
@@ -46,11 +45,10 @@ public class OrdenarAristas {
 
         ordenar.Shell(arreglo, arreglo.length);
 
-        System.out.println("Aristas ordenadas con ShellSort:");
-
         mostrar(arreglo);
     }
 
+    // QuickSort por peso
     public static void quickSort(Grafo grafo) {
 
         Arista[] arreglo = obtenerAristas(grafo);
@@ -59,11 +57,54 @@ public class OrdenarAristas {
 
         ordenar.recursivo(arreglo, 0, arreglo.length - 1);
 
-        System.out.println("Aristas ordenadas con QuickSort:");
-
         mostrar(arreglo);
     }
 
+    // Obtener aristas con sus nombres
+    public static AristaNombre[] obtenerAristasNombre(Grafo grafo) {
+
+        Arista[] aristas = obtenerAristas(grafo);
+
+        ArrayList<Vertice> vertices = grafo.getVertices();
+
+        AristaNombre[] arreglo = new AristaNombre[aristas.length];
+
+        for (int i = 0; i < aristas.length; i++) {
+
+            String origen = vertices.get(aristas[i].getOrigen()).getNombre();
+            String destino = vertices.get(aristas[i].getDestino()).getNombre();
+
+            arreglo[i] = new AristaNombre(aristas[i], origen, destino);
+        }
+
+        return arreglo;
+    }
+
+    // ShellSort por nombre
+    public static void shellSortNombre(Grafo grafo) {
+
+        AristaNombre[] arreglo = obtenerAristasNombre(grafo);
+
+        Ordenar<AristaNombre> ordenar = new Ordenar<>();
+
+        ordenar.Shell(arreglo, arreglo.length);
+
+        mostrarNombre(arreglo);
+    }
+
+    // QuickSort por nombre
+    public static void quickSortNombre(Grafo grafo) {
+
+        AristaNombre[] arreglo = obtenerAristasNombre(grafo);
+
+        Ordenar<AristaNombre> ordenar = new Ordenar<>();
+
+        ordenar.recursivo(arreglo, 0, arreglo.length - 1);
+
+        mostrarNombre(arreglo);
+    }
+
+    // Mostrar aristas por peso
     public static void mostrar(Arista[] arreglo) {
 
         for (int i = 0; i < arreglo.length; i++) {
@@ -72,6 +113,19 @@ public class OrdenarAristas {
                     arreglo[i].getOrigen() + " - " +
                             arreglo[i].getDestino() + " : " +
                             arreglo[i].getPeso()
+            );
+        }
+    }
+
+    // Mostrar aristas por nombre
+    public static void mostrarNombre(AristaNombre[] arreglo) {
+
+        for (int i = 0; i < arreglo.length; i++) {
+
+            System.out.println(
+                    arreglo[i].origen + " - " +
+                            arreglo[i].destino + " : " +
+                            arreglo[i].arista.getPeso()
             );
         }
     }

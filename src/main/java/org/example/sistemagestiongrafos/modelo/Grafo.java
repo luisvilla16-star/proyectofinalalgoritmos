@@ -1,3 +1,4 @@
+
 package org.example.sistemagestiongrafos.modelo;
 
 import java.util.ArrayList;
@@ -22,11 +23,9 @@ public class Grafo {
         for (int i = 0; i < cantidadMaxima; i++) {
 
             vertices.add(null);
-
             listaAdyacencia[i] = new ArrayList<>();
 
             for (int j = 0; j < cantidadMaxima; j++) {
-
                 matrizAdyacencia[i][j] = -1;
             }
 
@@ -78,7 +77,6 @@ public class Grafo {
         return true;
     }
 
-
     public int buscarArista(int origen, int destino) {
 
         if (!existeVertice(origen) || !existeVertice(destino)) {
@@ -97,37 +95,28 @@ public class Grafo {
 
     public boolean agregarArista(int origen, int destino, double peso) {
 
-        // Verificar que los dos vertices existan
         if (!existeVertice(origen) || !existeVertice(destino)) {
             return false;
         }
 
-        // No permitir conexiones consigo mismo ni pesos negativos o infinitos
         if (origen == destino || peso < 0 || !Double.isFinite(peso)) {
             return false;
         }
 
-        // Verificar que la conexion no exista
         if (buscarArista(origen, destino) != -1) {
             return false;
         }
 
-        // Crear una nueva arista
         Arista nueva = new Arista(origen, destino, peso);
 
-        // Agregar la conexion a la lista de adyacencia
         listaAdyacencia[origen].add(nueva);
-
-        // Guardar el peso en la matriz de adyacencia
         matrizAdyacencia[origen][destino] = peso;
 
-        // Si el grafo no es dirigido, agregar tambien la conexion inversa
         if (!dirigido) {
 
             Arista inversa = new Arista(destino, origen, peso);
 
             listaAdyacencia[destino].add(inversa);
-
             matrizAdyacencia[destino][origen] = peso;
         }
 
@@ -145,13 +134,11 @@ public class Grafo {
         }
 
         listaAdyacencia[origen].remove(buscarArista(origen, destino));
-
         matrizAdyacencia[origen][destino] = -1;
 
         if (!dirigido) {
 
             listaAdyacencia[destino].remove(buscarArista(destino, origen));
-
             matrizAdyacencia[destino][origen] = -1;
         }
 
@@ -164,24 +151,29 @@ public class Grafo {
             return false;
         }
 
-        if (peso < 0 || !Double.isFinite(peso) || buscarArista(origen, destino) == -1) {
+        if (peso < 0 || !Double.isFinite(peso)) {
             return false;
         }
 
-        listaAdyacencia[origen].get(buscarArista(origen, destino)).setPeso(peso);
+        int posicion = buscarArista(origen, destino);
 
+        if (posicion == -1) {
+            return false;
+        }
+
+        listaAdyacencia[origen].get(posicion).setPeso(peso);
         matrizAdyacencia[origen][destino] = peso;
 
         if (!dirigido) {
 
-            listaAdyacencia[destino].get(buscarArista(destino, origen)).setPeso(peso);
+            int posicionInversa = buscarArista(destino, origen);
 
+            listaAdyacencia[destino].get(posicionInversa).setPeso(peso);
             matrizAdyacencia[destino][origen] = peso;
         }
 
         return true;
     }
-
 
     public boolean modificarVertice(int id, String nombre) {
 
@@ -208,15 +200,12 @@ public class Grafo {
         return true;
     }
 
-
-
     public boolean eliminarVertice(int id) {
 
         if (!existeVertice(id)) {
             return false;
         }
 
-        // Eliminar las conexiones
         for (int i = 0; i < listaAdyacencia.length; i++) {
 
             for (int j = 0; j < listaAdyacencia[i].size(); j++) {
@@ -230,21 +219,17 @@ public class Grafo {
             }
         }
 
-        // Limpiar la matriz
         for (int i = 0; i < matrizAdyacencia.length; i++) {
             matrizAdyacencia[id][i] = -1;
             matrizAdyacencia[i][id] = -1;
         }
 
-        // Mantener el valor de la diagonal
         matrizAdyacencia[id][id] = 0;
 
-        // Eliminar el vertice
         vertices.set(id, null);
 
         return true;
     }
-
 
     public ArrayList<Arista>[] getListaAdyacencia() {
 
@@ -271,7 +256,6 @@ public class Grafo {
         return copia;
     }
 
-
     public double[][] getMatrizAdyacencia() {
 
         double[][] copia = new double[matrizAdyacencia.length][matrizAdyacencia.length];
@@ -279,7 +263,6 @@ public class Grafo {
         for (int i = 0; i < matrizAdyacencia.length; i++) {
 
             for (int j = 0; j < matrizAdyacencia[i].length; j++) {
-
                 copia[i][j] = matrizAdyacencia[i][j];
             }
         }
@@ -287,4 +270,7 @@ public class Grafo {
         return copia;
     }
 
+    public boolean esDirigido() {
+        return dirigido;
+    }
 }

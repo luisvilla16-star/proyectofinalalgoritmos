@@ -3,6 +3,7 @@ package org.example.sistemagestiongrafos.algoritmos;
 
 import org.example.sistemagestiongrafos.modelo.Grafo;
 import org.example.sistemagestiongrafos.modelo.Arista;
+
 import java.util.ArrayList;
 
 public class BFS {
@@ -26,8 +27,6 @@ public class BFS {
         fin++;
 
         visitado[inicio] = true;
-
-        System.out.println("Recorrido BFS:");
 
         while (frente < fin) {
 

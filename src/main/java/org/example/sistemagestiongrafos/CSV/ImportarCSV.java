@@ -20,43 +20,61 @@ public class ImportarCSV {
             String linea;
 
             // Leer el archivo para obtener los vertices
+            linea = lector.readLine();
+
+            if (linea == null || !linea.replace("\uFEFF", "").trim()
+                    .equalsIgnoreCase("origen,destino,peso")) {
+
+                System.out.println("Error: encabezado incorrecto");
+                lector.close();
+                return null;
+            }
+
             while ((linea = lector.readLine()) != null) {
 
-                linea = linea.replace("\uFEFF", "").trim();
+                linea = linea.trim();
 
                 if (linea.equals("")) {
                     continue;
                 }
 
-                if (linea.toLowerCase().startsWith("origen,")) {
+                String[] datos = linea.split(",", -1);
+
+                if (datos.length != 3) {
+                    System.out.println("Fila incorrecta: " + linea);
                     continue;
                 }
 
-                String[] datos = linea.split(",");
+                String origen = datos[0].trim();
+                String destino = datos[1].trim();
 
-                if (datos.length == 3) {
+                if (origen.equals("") || destino.equals("") ||
+                        datos[2].trim().equals("")) {
 
-                    String origen = datos[0].trim();
-                    String destino = datos[1].trim();
+                    System.out.println("Hay campos vacios: " + linea);
+                    continue;
+                }
 
-                    try {
+                try {
 
-                        double peso = Double.parseDouble(datos[2].trim());
+                    double peso = Double.parseDouble(datos[2].trim());
 
-                        if (peso >= 0 && !origen.equals("") && !destino.equals("")) {
+                    if (peso >= 0 && Double.isFinite(peso)) {
 
-                            if (!nombres.contains(origen)) {
-                                nombres.add(origen);
-                            }
-
-                            if (!nombres.contains(destino)) {
-                                nombres.add(destino);
-                            }
+                        if (!nombres.contains(origen)) {
+                            nombres.add(origen);
                         }
 
-                    } catch (NumberFormatException e) {
+                        if (!nombres.contains(destino)) {
+                            nombres.add(destino);
+                        }
+
+                    } else {
                         System.out.println("Peso incorrecto: " + linea);
                     }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Peso incorrecto: " + linea);
                 }
             }
 
@@ -72,43 +90,66 @@ public class ImportarCSV {
             // Leer nuevamente el archivo
             lector = new BufferedReader(new FileReader(archivo));
 
+            lector.readLine(); // Saltar encabezado
+
             while ((linea = lector.readLine()) != null) {
 
-                linea = linea.replace("\uFEFF", "").trim();
+                linea = linea.trim();
 
                 if (linea.equals("")) {
                     continue;
                 }
 
-                if (linea.toLowerCase().startsWith("origen,")) {
+                String[] datos = linea.split(",", -1);
+
+                if (datos.length != 3) {
                     continue;
                 }
 
-                String[] datos = linea.split(",");
+                String origen = datos[0].trim();
+                String destino = datos[1].trim();
 
-                if (datos.length == 3) {
+                if (origen.equals("") || destino.equals("") ||
+                        datos[2].trim().equals("")) {
+                    continue;
+                }
 
-                    String origen = datos[0].trim();
-                    String destino = datos[1].trim();
+                try {
 
-                    try {
+                    double peso = Double.parseDouble(datos[2].trim());
 
-                        double peso = Double.parseDouble(datos[2].trim());
+                    int idOrigen = nombres.indexOf(origen);
+                    int idDestino = nombres.indexOf(destino);
 
-                        int idOrigen = nombres.indexOf(origen);
-                        int idDestino = nombres.indexOf(destino);
+                    if (idOrigen != -1 && idDestino != -1 &&
+                            peso >= 0 && Double.isFinite(peso)) {
 
-                        if (idOrigen != -1 && idDestino != -1 && peso >= 0) {
-                            grafo.agregarArista(idOrigen, idDestino, peso);
+                        if (!grafo.agregarArista(idOrigen, idDestino, peso)) {
+                            System.out.println("Conexion duplicada o incorrecta: " + linea);
                         }
-
-                    } catch (NumberFormatException e) {
-                        System.out.println("Peso incorrecto: " + linea);
                     }
+
+                } catch (NumberFormatException e) {
+                    // No se agrega la conexion
                 }
             }
 
             lector.close();
+
+            System.out.println("Importacion terminada");
+            System.out.println("Vertices: " + nombres.size());
+
+            int aristas = 0;
+
+            for (int i = 0; i < nombres.size(); i++) {
+                aristas += grafo.getListaAdyacencia()[i].size();
+            }
+
+            if (!dirigido) {
+                aristas = aristas / 2;
+            }
+
+            System.out.println("Aristas: " + aristas);
 
             return grafo;
 

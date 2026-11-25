@@ -1,3 +1,4 @@
+
 package org.example.sistemagestiongrafos.CSV;
 
 import org.example.sistemagestiongrafos.modelo.Grafo;
@@ -16,27 +17,34 @@ public class ExportarCSV {
 
             BufferedWriter escritor = new BufferedWriter(new FileWriter(archivo));
 
+            // Escribir encabezado
             escritor.write("origen,destino,peso");
             escritor.newLine();
 
+            // Obtener las listas de adyacencia
             ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
 
+            // Recorrer los vertices
             for (int i = 0; i < lista.length; i++) {
 
                 if (grafo.existeVertice(i)) {
 
+                    // Recorrer las conexiones
                     for (int j = 0; j < lista[i].size(); j++) {
 
                         Arista arista = lista[i].get(j);
 
                         int destino = arista.getDestino();
 
+                        // Evitar repetir conexiones si el grafo no es dirigido
                         if (dirigido || i < destino) {
 
                             String origen = grafo.getVertices().get(i).getNombre();
+
                             String nombreDestino = grafo.getVertices().get(destino).getNombre();
 
                             escritor.write(origen + "," + nombreDestino + "," + arista.getPeso());
+
                             escritor.newLine();
                         }
                     }
