@@ -36,14 +36,24 @@ public class Grafo {
 
     public int agregarVertice(String nombre) {
 
-        if (nombre == null || nombre.equals("")) {
+        if (nombre == null || nombre.trim().equals("")) {
             return -1;
         }
 
         for (int i = 0; i < vertices.size(); i++) {
 
+            if (vertices.get(i) != null) {
+
+                if (vertices.get(i).getNombre().equalsIgnoreCase(nombre.trim())) {
+                    return -1;
+                }
+            }
+        }
+
+        for (int i = 0; i < vertices.size(); i++) {
+
             if (vertices.get(i) == null) {
-                vertices.set(i, new Vertice(i, nombre));
+                vertices.set(i, new Vertice(i, nombre.trim()));
                 return i;
             }
         }
@@ -52,7 +62,7 @@ public class Grafo {
     }
 
     public ArrayList<Vertice> getVertices() {
-        return vertices;
+        return new ArrayList<>(vertices);
     }
 
     public boolean existeVertice(int vertice) {
@@ -71,6 +81,10 @@ public class Grafo {
 
     public int buscarArista(int origen, int destino) {
 
+        if (!existeVertice(origen) || !existeVertice(destino)) {
+            return -1;
+        }
+
         for (int i = 0; i < listaAdyacencia[origen].size(); i++) {
 
             if (listaAdyacencia[origen].get(i).getDestino() == destino) {
@@ -81,7 +95,6 @@ public class Grafo {
         return -1;
     }
 
-
     public boolean agregarArista(int origen, int destino, double peso) {
 
         // Verificar que los dos vertices existan
@@ -89,8 +102,8 @@ public class Grafo {
             return false;
         }
 
-        // No permitir conexiones consigo mismo ni pesos negativos
-        if (origen == destino || peso < 0) {
+        // No permitir conexiones consigo mismo ni pesos negativos o infinitos
+        if (origen == destino || peso < 0 || !Double.isFinite(peso)) {
             return false;
         }
 
@@ -120,7 +133,6 @@ public class Grafo {
 
         return true;
     }
-
 
     public boolean eliminarArista(int origen, int destino) {
 
@@ -152,7 +164,7 @@ public class Grafo {
             return false;
         }
 
-        if (peso < 0 || buscarArista(origen, destino) == -1) {
+        if (peso < 0 || !Double.isFinite(peso) || buscarArista(origen, destino) == -1) {
             return false;
         }
 
@@ -177,11 +189,21 @@ public class Grafo {
             return false;
         }
 
-        if (nombre == null || nombre.equals("")) {
+        if (nombre == null || nombre.trim().equals("")) {
             return false;
         }
 
-        vertices.get(id).setNombre(nombre);
+        for (int i = 0; i < vertices.size(); i++) {
+
+            if (i != id && vertices.get(i) != null) {
+
+                if (vertices.get(i).getNombre().equalsIgnoreCase(nombre.trim())) {
+                    return false;
+                }
+            }
+        }
+
+        vertices.get(id).setNombre(nombre.trim());
 
         return true;
     }
@@ -225,13 +247,44 @@ public class Grafo {
 
 
     public ArrayList<Arista>[] getListaAdyacencia() {
-        return listaAdyacencia;
+
+        ArrayList<Arista>[] copia = new ArrayList[listaAdyacencia.length];
+
+        for (int i = 0; i < listaAdyacencia.length; i++) {
+
+            copia[i] = new ArrayList<>();
+
+            for (int j = 0; j < listaAdyacencia[i].size(); j++) {
+
+                Arista arista = listaAdyacencia[i].get(j);
+
+                Arista nueva = new Arista(
+                        arista.getOrigen(),
+                        arista.getDestino(),
+                        arista.getPeso()
+                );
+
+                copia[i].add(nueva);
+            }
+        }
+
+        return copia;
     }
 
 
-
     public double[][] getMatrizAdyacencia() {
-        return matrizAdyacencia;
+
+        double[][] copia = new double[matrizAdyacencia.length][matrizAdyacencia.length];
+
+        for (int i = 0; i < matrizAdyacencia.length; i++) {
+
+            for (int j = 0; j < matrizAdyacencia[i].length; j++) {
+
+                copia[i][j] = matrizAdyacencia[i][j];
+            }
+        }
+
+        return copia;
     }
 
 }

@@ -9,6 +9,11 @@ public class Dijkstra {
 
     public static void buscar(Grafo grafo, int inicio, int destino) {
 
+        if (!grafo.existeVertice(inicio) || !grafo.existeVertice(destino)) {
+            System.out.println("Vertice inexistente");
+            return;
+        }
+
         int n = grafo.getVertices().size();
 
         double[] distancia = new double[n];
@@ -18,6 +23,17 @@ public class Dijkstra {
         ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
 
         for (int i = 0; i < n; i++) {
+
+            for (int j = 0; j < lista[i].size(); j++) {
+
+                double peso = lista[i].get(j).getPeso();
+
+                if (peso < 0 || !Double.isFinite(peso)) {
+                    System.out.println("El grafo contiene pesos invalidos");
+                    return;
+                }
+            }
+
             distancia[i] = Double.MAX_VALUE;
             anterior[i] = -1;
         }
@@ -29,6 +45,7 @@ public class Dijkstra {
             int actual = -1;
 
             for (int j = 0; j < n; j++) {
+
                 if (grafo.existeVertice(j) && !visitado[j] &&
                         (actual == -1 || distancia[j] < distancia[actual])) {
                     actual = j;

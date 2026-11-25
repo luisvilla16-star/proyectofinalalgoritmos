@@ -1,8 +1,6 @@
 
 package org.example.sistemagestiongrafos.algoritmos;
 
-import java.util.Arrays;
-
 public class Ordenar<T extends Comparable<T>> {
 
 

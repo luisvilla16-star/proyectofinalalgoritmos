@@ -25,11 +25,35 @@ public class PruebaGrafo {
             }
         }
 
+        // PROBAR NOMBRES INCORRECTOS
+        System.out.println("\nPROBAR NOMBRES INCORRECTOS:");
+
+        System.out.println("Nombre repetido:");
+        System.out.println(grafo.agregarVertice("biblioteca"));
+
+        System.out.println("Nombre vacio:");
+        System.out.println(grafo.agregarVertice(""));
+
+        System.out.println("Nombre con espacios:");
+        System.out.println(grafo.agregarVertice("   "));
+
         // AGREGAR CONEXIONES
         System.out.println("\nAGREGAR CONEXIONES:");
 
         System.out.println(grafo.agregarArista(0, 1, 100));
         System.out.println(grafo.agregarArista(0, 2, 150));
+
+        // PROBAR PESOS INCORRECTOS
+        System.out.println("\nPROBAR PESOS INCORRECTOS:");
+
+        System.out.println("Peso negativo:");
+        System.out.println(grafo.agregarArista(1, 2, -50));
+
+        System.out.println("Peso infinito:");
+        System.out.println(grafo.agregarArista(1, 2, Double.POSITIVE_INFINITY));
+
+        System.out.println("Peso NaN:");
+        System.out.println(grafo.agregarArista(1, 2, Double.NaN));
 
         // BUSCAR CONEXION
         System.out.println("\nBUSCAR CONEXION:");
@@ -41,10 +65,23 @@ public class PruebaGrafo {
 
         System.out.println(grafo.modificarArista(0, 1, 300));
 
+        // PROBAR MODIFICAR CON PESOS INCORRECTOS
+        System.out.println("\nMODIFICAR CON PESOS INCORRECTOS:");
+
+        System.out.println(grafo.modificarArista(0, 1, -50));
+        System.out.println(grafo.modificarArista(0, 1, Double.POSITIVE_INFINITY));
+        System.out.println(grafo.modificarArista(0, 1, Double.NaN));
+
         // MODIFICAR VERTICE
         System.out.println("\nMODIFICAR VERTICE:");
 
         System.out.println(grafo.modificarVertice(2, "Cafeteria Nueva"));
+
+        System.out.println("Intentar nombre repetido:");
+        System.out.println(grafo.modificarVertice(2, "Biblioteca"));
+
+        System.out.println("Intentar nombre vacio:");
+        System.out.println(grafo.modificarVertice(2, "   "));
 
         // MOSTRAR LISTA DE ADYACENCIA
         System.out.println("\nLISTA DE ADYACENCIA:");
@@ -77,6 +114,18 @@ public class PruebaGrafo {
 
             System.out.println();
         }
+
+        // PROBAR COPIAS DE LAS ESTRUCTURAS
+        System.out.println("\nPROBAR COPIAS:");
+
+        lista[0].clear();
+        matriz[0][1] = 999;
+
+        System.out.println("Conexion original despues de modificar copias:");
+        System.out.println(grafo.buscarArista(0, 1));
+
+        System.out.println("Peso original en la matriz:");
+        System.out.println(grafo.getMatrizAdyacencia()[0][1]);
 
         // ELIMINAR CONEXION
         System.out.println("\nELIMINAR CONEXION:");

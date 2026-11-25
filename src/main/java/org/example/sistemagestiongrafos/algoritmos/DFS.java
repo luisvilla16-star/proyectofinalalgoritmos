@@ -9,6 +9,11 @@ public class DFS {
 
     public static void recorrer(Grafo grafo, int inicio) {
 
+        if (!grafo.existeVertice(inicio)) {
+            System.out.println("Vertice inexistente");
+            return;
+        }
+
         boolean[] visitado = new boolean[grafo.getVertices().size()];
 
         visitar(grafo, inicio, visitado);
