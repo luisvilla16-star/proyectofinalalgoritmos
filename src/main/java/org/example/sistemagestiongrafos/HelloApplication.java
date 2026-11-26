@@ -17,9 +17,18 @@ public class HelloApplication extends Application {
         stage.setTitle("Sistema de gestión de grafos");
         stage.setScene(escena);
 
-        stage.setMinWidth(100);
-        stage.setMinHeight(50);
+        // Tamaño de la ventana
+        stage.setWidth(1000);
+        stage.setHeight(700);
 
+        // Tamaño mínimo
+        stage.setMinWidth(850);
+        stage.setMinHeight(600);
+
+        // Permitir cambiar el tamaño
+        stage.setResizable(true);
+
+        // Mostrar ventana
         stage.show();
     }
 

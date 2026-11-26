@@ -40,7 +40,6 @@ public class HelloController {
 
         BorderPane principal = new BorderPane();
 
-        // MENÚ IZQUIERDO
         VBox menu = new VBox(8);
         menu.setPadding(new Insets(15));
         menu.setPrefWidth(230);
@@ -52,14 +51,7 @@ public class HelloController {
         CheckBox dirigidoCheck = new CheckBox("Grafo dirigido");
 
         dirigidoCheck.setOnAction(e -> {
-
-            dirigido = dirigidoCheck.isSelected();
-
-            grafo = new Grafo(MAX_VERTICES, dirigido);
-
-            dibujarGrafo();
-
-            resultados.setText("Se creó un nuevo grafo.");
+            cambiarTipoGrafo(dirigidoCheck.isSelected());
         });
 
         menu.getChildren().addAll(
@@ -102,14 +94,12 @@ public class HelloController {
                 boton("Comparar tiempos de algoritmos", e -> medirTiempos())
         );
 
-        // PERMITIR DESPLAZARSE POR EL MENÚ
         ScrollPane scrollMenu = new ScrollPane(menu);
         scrollMenu.setFitToWidth(true);
         scrollMenu.setPrefWidth(250);
 
         principal.setLeft(scrollMenu);
 
-        // PANEL DERECHO
         VBox derecha = new VBox(10);
         derecha.setPadding(new Insets(10));
 
@@ -117,14 +107,12 @@ public class HelloController {
         tituloGrafo.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
         Button limpiar = new Button("Limpiar todo");
-
         limpiar.setOnAction(e -> limpiarTodo());
 
         HBox parteSuperior = new HBox(10);
         parteSuperior.setAlignment(Pos.CENTER_LEFT);
         parteSuperior.getChildren().addAll(tituloGrafo, limpiar);
 
-        // PANEL DONDE SE DIBUJA EL GRAFO
         panelGrafo = new Pane();
         panelGrafo.setPrefSize(850, 450);
         panelGrafo.setMinHeight(350);
@@ -133,12 +121,10 @@ public class HelloController {
                         "-fx-border-color: gray;"
         );
 
-        // ÁREA DE RESULTADOS
         resultados = new TextArea();
         resultados.setEditable(false);
         resultados.setPrefRowCount(6);
 
-        // GRÁFICA DE PASTEL
         graficaTiempos = new PieChart();
         graficaTiempos.setTitle("Tiempos de ejecución de los algoritmos");
         graficaTiempos.setPrefHeight(300);
@@ -152,7 +138,6 @@ public class HelloController {
                 graficaTiempos
         );
 
-        // PERMITIR DESPLAZARSE POR EL PANEL DERECHO
         ScrollPane scrollDerecha = new ScrollPane(derecha);
         scrollDerecha.setFitToWidth(true);
         scrollDerecha.setFitToHeight(false);
@@ -167,7 +152,6 @@ public class HelloController {
                          javafx.event.EventHandler<javafx.event.ActionEvent> accion) {
 
         Button b = new Button(nombre);
-
         b.setMaxWidth(Double.MAX_VALUE);
         b.setOnAction(accion);
 
@@ -185,15 +169,75 @@ public class HelloController {
         return dialogo.showAndWait().orElse(null);
     }
 
+    // CAMBIAR ENTRE GRAFO DIRIGIDO Y NO DIRIGIDO
+    private void cambiarTipoGrafo(boolean nuevoTipo) {
+
+        ArrayList<Vertice> vertices = grafo.getVertices();
+        ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
+
+        Grafo nuevoGrafo = new Grafo(MAX_VERTICES, nuevoTipo);
+
+        // Guardar los nuevos ID de los vértices
+        int[] nuevosId = new int[vertices.size()];
+
+        for (int i = 0; i < nuevosId.length; i++) {
+            nuevosId[i] = -1;
+        }
+
+        // Copiar los vértices
+        for (int i = 0; i < vertices.size(); i++) {
+
+            if (vertices.get(i) != null) {
+
+                int id = nuevoGrafo.agregarVertice(
+                        vertices.get(i).getNombre()
+                );
+
+                nuevosId[i] = id;
+            }
+        }
+
+        // Copiar las aristas
+        for (int i = 0; i < lista.length; i++) {
+
+            if (nuevosId[i] != -1) {
+
+                for (Arista a : lista[i]) {
+
+                    int origen = nuevosId[a.getOrigen()];
+                    int destino = nuevosId[a.getDestino()];
+
+                    if (origen != -1 && destino != -1) {
+
+                        nuevoGrafo.agregarArista(
+                                origen,
+                                destino,
+                                a.getPeso()
+                        );
+                    }
+                }
+            }
+        }
+
+        grafo = nuevoGrafo;
+        dirigido = nuevoTipo;
+
+        dibujarGrafo();
+
+        if (dirigido) {
+            resultados.setText("El grafo ahora es dirigido.");
+        } else {
+            resultados.setText("El grafo ahora es no dirigido.");
+        }
+    }
+
     // LIMPIAR TODO EL GRAFO
     private void limpiarTodo() {
 
         grafo = new Grafo(MAX_VERTICES, dirigido);
 
         panelGrafo.getChildren().clear();
-
         resultados.clear();
-
         graficaTiempos.getData().clear();
 
         resultados.setText("Se eliminó toda la información del grafo.");
@@ -245,7 +289,6 @@ public class HelloController {
             if (grafo.modificarVertice(id, nombre)) {
 
                 resultados.setText("Vértice modificado correctamente.");
-
                 dibujarGrafo();
 
             } else {
@@ -275,7 +318,6 @@ public class HelloController {
             if (grafo.eliminarVertice(id)) {
 
                 resultados.setText("Vértice eliminado correctamente.");
-
                 dibujarGrafo();
 
             } else {
@@ -354,7 +396,6 @@ public class HelloController {
             if (correcto) {
 
                 resultados.setText("Operación realizada correctamente.");
-
                 dibujarGrafo();
 
             } else {
@@ -374,7 +415,6 @@ public class HelloController {
         panelGrafo.getChildren().clear();
 
         ArrayList<Vertice> vertices = grafo.getVertices();
-
         ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
 
         int cantidad = 0;
@@ -403,9 +443,9 @@ public class HelloController {
         double[] x = new double[vertices.size()];
         double[] y = new double[vertices.size()];
 
-        // CALCULAR POSICIONES
         int posicion = 0;
 
+        // CALCULAR POSICIONES
         for (int i = 0; i < vertices.size(); i++) {
 
             if (vertices.get(i) != null) {
@@ -430,24 +470,20 @@ public class HelloController {
 
                 int destino = a.getDestino();
 
-                if (!dirigido && i > destino) {
+                if (!grafo.existeVertice(destino)) {
                     continue;
                 }
 
-                Line linea = new Line(
+                if (!grafo.esDirigido() && i > destino) {
+                    continue;
+                }
+
+                dibujarArista(
                         x[i], y[i],
-                        x[destino], y[destino]
+                        x[destino], y[destino],
+                        a.getPeso(),
+                        grafo.esDirigido()
                 );
-
-                linea.setStroke(Color.GRAY);
-
-                Text peso = new Text(
-                        (x[i] + x[destino]) / 2,
-                        (y[i] + y[destino]) / 2,
-                        String.valueOf(a.getPeso())
-                );
-
-                panelGrafo.getChildren().addAll(linea, peso);
             }
         }
 
@@ -474,6 +510,73 @@ public class HelloController {
         }
     }
 
+    // DIBUJAR UNA ARISTA
+    private void dibujarArista(double x1, double y1,
+                               double x2, double y2,
+                               double peso, boolean tieneFlecha) {
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        double distancia = Math.sqrt(dx * dx + dy * dy);
+
+        if (distancia == 0) {
+            return;
+        }
+
+        double ux = dx / distancia;
+        double uy = dy / distancia;
+
+        // Evitar que la línea entre dentro de los círculos
+        double inicioX = x1 + ux * 25;
+        double inicioY = y1 + uy * 25;
+
+        double finalX = x2 - ux * 25;
+        double finalY = y2 - uy * 25;
+
+        Line linea = new Line(
+                inicioX, inicioY,
+                finalX, finalY
+        );
+
+        linea.setStroke(Color.GRAY);
+
+        Text textoPeso = new Text(
+                (x1 + x2) / 2,
+                (y1 + y2) / 2,
+                String.valueOf(peso)
+        );
+
+        panelGrafo.getChildren().addAll(linea, textoPeso);
+
+        if (tieneFlecha) {
+            dibujarFlecha(finalX, finalY, ux, uy);
+        }
+    }
+
+    // DIBUJAR LA PUNTA DE LA FLECHA
+    private void dibujarFlecha(double x, double y,
+                               double ux, double uy) {
+
+        double tamano = 12;
+
+        double angulo = Math.PI / 6;
+
+        double x1 = x - tamano * (ux * Math.cos(angulo) - uy * Math.sin(angulo));
+        double y1 = y - tamano * (uy * Math.cos(angulo) + ux * Math.sin(angulo));
+
+        double x2 = x - tamano * (ux * Math.cos(angulo) + uy * Math.sin(angulo));
+        double y2 = y - tamano * (uy * Math.cos(angulo) - ux * Math.sin(angulo));
+
+        Line flecha1 = new Line(x, y, x1, y1);
+        Line flecha2 = new Line(x, y, x2, y2);
+
+        flecha1.setStroke(Color.DARKBLUE);
+        flecha2.setStroke(Color.DARKBLUE);
+
+        panelGrafo.getChildren().addAll(flecha1, flecha2);
+    }
+
     // EJECUTAR BFS
     private void ejecutarBFS() {
 
@@ -493,7 +596,6 @@ public class HelloController {
             }
 
             resultados.setText("El resultado de BFS aparece en la consola.");
-
             BFS.recorrer(grafo, inicio);
 
         } catch (Exception e) {
@@ -521,7 +623,6 @@ public class HelloController {
             }
 
             resultados.setText("El resultado de DFS aparece en la consola.");
-
             DFS.recorrer(grafo, inicio);
 
         } catch (Exception e) {
@@ -581,7 +682,7 @@ public class HelloController {
 
             for (Arista a : lista[i]) {
 
-                if (dirigido || i < a.getDestino()) {
+                if (grafo.esDirigido() || i < a.getDestino()) {
                     aristas.add(a);
                 }
             }
@@ -592,11 +693,8 @@ public class HelloController {
         Ordenar<Arista> ordenar = new Ordenar<>();
 
         if (quick) {
-
             ordenar.recursivo(arreglo, 0, arreglo.length - 1);
-
         } else {
-
             ordenar.Shell(arreglo, arreglo.length);
         }
 
@@ -622,7 +720,6 @@ public class HelloController {
     private void importarCSV() {
 
         FileChooser selector = new FileChooser();
-
         selector.setTitle("Importar CSV");
 
         File archivo = selector.showOpenDialog(
@@ -641,7 +738,6 @@ public class HelloController {
                 grafo = nuevo;
 
                 resultados.setText("CSV importado correctamente.");
-
                 dibujarGrafo();
 
             } else {
@@ -679,7 +775,6 @@ public class HelloController {
     private void mostrarLista() {
 
         ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
-
         ArrayList<Vertice> vertices = grafo.getVertices();
 
         String texto = "LISTA DE ADYACENCIA\n\n";
@@ -693,7 +788,6 @@ public class HelloController {
                 for (Arista a : lista[i]) {
 
                     texto += vertices.get(a.getDestino()).getNombre();
-
                     texto += " (" + a.getPeso() + "), ";
                 }
 
@@ -708,7 +802,6 @@ public class HelloController {
     private void mostrarMatriz() {
 
         double[][] matriz = grafo.getMatrizAdyacencia();
-
         ArrayList<Vertice> vertices = grafo.getVertices();
 
         String texto = "MATRIZ DE ADYACENCIA\n\n";
@@ -748,23 +841,20 @@ public class HelloController {
     private void medirTiempos() {
 
         ArrayList<Arista>[] lista = grafo.getListaAdyacencia();
-
         ArrayList<Vertice> vertices = grafo.getVertices();
 
         ArrayList<Arista> aristas = new ArrayList<>();
 
-        // OBTENER LAS ARISTAS
         for (int i = 0; i < lista.length; i++) {
 
             for (Arista a : lista[i]) {
 
-                if (dirigido || i < a.getDestino()) {
+                if (grafo.esDirigido() || i < a.getDestino()) {
                     aristas.add(a);
                 }
             }
         }
 
-        // BUSCAR EL PRIMER Y ÚLTIMO VÉRTICE
         int inicio = -1;
         int destino = -1;
 
@@ -862,7 +952,6 @@ public class HelloController {
         tiempoDFS = tiempoDFS / repeticiones;
         tiempoDijkstra = tiempoDijkstra / repeticiones;
 
-        // MOSTRAR RESULTADOS
         String texto = "TIEMPOS PROMEDIO DE EJECUCIÓN\n\n";
 
         texto += "QuickSort: " + tiempoQuick + " ns\n";
